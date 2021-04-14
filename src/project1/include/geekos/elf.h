@@ -14,57 +14,60 @@
 /*
  * ELF header at the beginning of the executable.
  */
-typedef struct {
-    unsigned  char	ident[16];
-    unsigned  short	type;
-    unsigned  short	machine;
-    unsigned  int	version;
-    unsigned  int	entry;
-    unsigned  int	phoff;
-    unsigned  int	sphoff;
-    unsigned  int	flags;
-    unsigned  short	ehsize;
-    unsigned  short	phentsize;
-    unsigned  short	phnum;
-    unsigned  short	shentsize;
-    unsigned  short	shnum;
-    unsigned  short	shstrndx;
+typedef struct
+{
+    unsigned char ident[16];
+    unsigned short type;
+    unsigned short machine;
+    unsigned int version;
+    unsigned int entry;
+    unsigned int phoff;
+    unsigned int sphoff;
+    unsigned int flags;
+    unsigned short ehsize;
+    unsigned short phentsize;
+    unsigned short phnum;
+    unsigned short shentsize;
+    unsigned short shnum;
+    unsigned short shstrndx;
 } elfHeader;
 
 /*
  * An entry in the ELF program header table.
  * This describes a single segment of the executable.
  */
-typedef struct {
-    unsigned  int   type;
-    unsigned  int   offset;
-    unsigned  int   vaddr;
-    unsigned  int   paddr;
-    unsigned  int   fileSize;
-    unsigned  int   memSize;
-    unsigned  int   flags;
-    unsigned  int   alignment;
+typedef struct
+{
+    unsigned int type;
+    unsigned int offset;
+    unsigned int vaddr;
+    unsigned int paddr;
+    unsigned int fileSize;
+    unsigned int memSize;
+    unsigned int flags;
+    unsigned int alignment;
 } programHeader;
 
 /*
  * Bits in flags field of programHeader.
  * These describe memory permissions required by the segment.
  */
-#define PF_R	0x4	 /* Pages of segment are readable. */
-#define PF_W	0x2	 /* Pages of segment are writable. */
-#define PF_X	0x1	 /* Pages of segment are executable. */
+#define PF_R 0x4 /* Pages of segment are readable. */
+#define PF_W 0x2 /* Pages of segment are writable. */
+#define PF_X 0x1 /* Pages of segment are executable. */
 
 /*
  * A segment of an executable.
  * It specifies a region of the executable file to be loaded
  * into memory.
  */
-struct Exe_Segment {
-    ulong_t offsetInFile;	 /* Offset of segment in executable file */
-    ulong_t lengthInFile;	 /* Length of segment data in executable file */
-    ulong_t startAddress;	 /* Start address of segment in user memory */
-    ulong_t sizeInMemory;	 /* Size of segment in memory */
-    int protFlags;		 /* VM protection flags; combination of VM_READ,VM_WRITE,VM_EXEC */
+struct Exe_Segment
+{
+    ulong_t offsetInFile; /* 段在可执行文件中的偏移值 Offset of segment in executable file */
+    ulong_t lengthInFile; /* 段在可执行文件中的长度 Length of segment data in executable file */
+    ulong_t startAddress; /* 段在内存中的起始地址 Start address of segment in user memory */
+    ulong_t sizeInMemory; /* 段在内存中的大小 Size of segment in memory */
+    int protFlags;        /* 保护标志 VM protection flags; combination of VM_READ,VM_WRITE,VM_EXEC */
 };
 
 /*
@@ -78,14 +81,14 @@ struct Exe_Segment {
  * A struct concisely representing all information needed to
  * load an execute an executable.
  */
-struct Exe_Format {
+struct Exe_Format
+{
     struct Exe_Segment segmentList[EXE_MAX_SEGMENTS]; /* Definition of segments */
-    int numSegments;		/* Number of segments contained in the executable */
-    ulong_t entryAddr;	 	/* Code entry point address */
+    int numSegments;                                  /* 定义了ELF文件中段的个数 Number of segments contained in the executable */
+    ulong_t entryAddr;                                /* 代码入口地址 Code entry point address */
 };
 
 int Parse_ELF_Executable(char *exeFileData, ulong_t exeFileLength,
-    struct Exe_Format *exeFormat);
+                         struct Exe_Format *exeFormat);
 
-#endif  /* GEEKOS_ELF_H */
-
+#endif /* GEEKOS_ELF_H */
