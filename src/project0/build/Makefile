@@ -146,7 +146,7 @@ NUMSECS := $(PERL) $(PROJECT_ROOT)/scripts/numsecs
 
 # Flags used for all C source files
 GENERAL_OPTS := -O -Wall -fno-stack-protector $(EXTRA_C_OPTS)
-CC_GENERAL_OPTS := $(GENERAL_OPTS) -Werror 
+CC_GENERAL_OPTS := $(GENERAL_OPTS) 
 
 # Flags used for kernel C source files
 CC_KERNEL_OPTS := -g -DGEEKOS -I$(PROJECT_ROOT)/include

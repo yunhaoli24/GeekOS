@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "bootinfo.h": "c",
+        "string.h": "c",
+        "keyboard.h": "c"
+    }
+}
