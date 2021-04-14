@@ -16,7 +16,7 @@
 #include <geekos/string.h>
 #include <geekos/kthread.h>
 #include <geekos/malloc.h>
-
+#include <geekos/user.h>
 
 /* ----------------------------------------------------------------------
  * Private data
@@ -35,7 +35,7 @@ static struct Thread_Queue s_runQueue;
 /*
  * Current thread.
  */
-struct Kernel_Thread* g_currentThread;
+struct Kernel_Thread *g_currentThread;
 
 /*
  * Boolean flag indicating that we need to choose a new runnable thread.
@@ -74,16 +74,16 @@ static tlocal_destructor_t s_tlocalDestructors[MAX_TLOCAL_KEYS];
 /*
  * Initialize a new Kernel_Thread.
  */
-static void Init_Thread(struct Kernel_Thread* kthread, void* stackPage,
-	int priority, bool detached)
+static void Init_Thread(struct Kernel_Thread *kthread, void *stackPage,
+                        int priority, bool detached)
 {
     static int nextFreePid = 1;
 
-    struct Kernel_Thread* owner = detached ? (struct Kernel_Thread*)0 : g_currentThread;
+    struct Kernel_Thread *owner = detached ? (struct Kernel_Thread *)0 : g_currentThread;
 
     memset(kthread, '\0', sizeof(*kthread));
     kthread->stackPage = stackPage;
-    kthread->esp = ((ulong_t) kthread->stackPage) + PAGE_SIZE;
+    kthread->esp = ((ulong_t)kthread->stackPage) + PAGE_SIZE;
     kthread->numTicks = 0;
     kthread->priority = priority;
     kthread->userContext = 0;
@@ -99,17 +99,16 @@ static void Init_Thread(struct Kernel_Thread* kthread, void* stackPage,
     kthread->alive = true;
     Clear_Thread_Queue(&kthread->joinQueue);
     kthread->pid = nextFreePid++;
-
 }
 
 /*
  * Create a new raw thread object.
  * Returns a null pointer if there isn't enough memory.
  */
-static struct Kernel_Thread* Create_Thread(int priority, bool detached)
+static struct Kernel_Thread *Create_Thread(int priority, bool detached)
 {
-    struct Kernel_Thread* kthread;
-    void* stackPage = 0;
+    struct Kernel_Thread *kthread;
+    void *stackPage = 0;
 
     /*
      * For now, just allocate one page each for the thread context
@@ -117,14 +116,15 @@ static struct Kernel_Thread* Create_Thread(int priority, bool detached)
      */
     kthread = Alloc_Page();
     if (kthread != 0)
-        stackPage = Alloc_Page();    
+        stackPage = Alloc_Page();
 
     /* Make sure that the memory allocations succeeded. */
     if (kthread == 0)
-	return 0;
-    if (stackPage == 0) {
-	Free_Page(kthread);
-	return 0;
+        return 0;
+    if (stackPage == 0)
+    {
+        Free_Page(kthread);
+        return 0;
     }
 
     /*Print("New thread @ %x, stack @ %x\n", kthread, stackPage); */
@@ -146,10 +146,10 @@ static struct Kernel_Thread* Create_Thread(int priority, bool detached)
  * We use this to set up some context for the thread before
  * we make it runnable.
  */
-static __inline__ void Push(struct Kernel_Thread* kthread, ulong_t value)
+static __inline__ void Push(struct Kernel_Thread *kthread, ulong_t value)
 {
     kthread->esp -= 4;
-    *((ulong_t *) kthread->esp) = value;
+    *((ulong_t *)kthread->esp) = value;
 }
 
 /*
@@ -158,7 +158,7 @@ static __inline__ void Push(struct Kernel_Thread* kthread, ulong_t value)
  * reclaim the resources used by a thread.
  * Called with interrupts enabled.
  */
-static void Destroy_Thread(struct Kernel_Thread* kthread)
+static void Destroy_Thread(struct Kernel_Thread *kthread)
 {
 
     /* Dispose of the thread's memory. */
@@ -170,14 +170,13 @@ static void Destroy_Thread(struct Kernel_Thread* kthread)
     Remove_From_All_Thread_List(&s_allThreadList, kthread);
 
     Enable_Interrupts();
-
 }
 
 /*
  * Hand given thread to the reaper for destruction.
  * Must be called with interrupts disabled!
  */
-static void Reap_Thread(struct Kernel_Thread* kthread)
+static void Reap_Thread(struct Kernel_Thread *kthread)
 {
     KASSERT(!Interrupts_Enabled());
     Enqueue_Thread(&s_graveyardQueue, kthread);
@@ -187,14 +186,15 @@ static void Reap_Thread(struct Kernel_Thread* kthread)
 /*
  * Called when a reference to the thread is broken.
  */
-static void Detach_Thread(struct Kernel_Thread* kthread)
+static void Detach_Thread(struct Kernel_Thread *kthread)
 {
     KASSERT(!Interrupts_Enabled());
     KASSERT(kthread->refCount > 0);
 
     --kthread->refCount;
-    if (kthread->refCount == 0) {
-	Reap_Thread(kthread);
+    if (kthread->refCount == 0)
+    {
+        Reap_Thread(kthread);
     }
 }
 
@@ -212,19 +212,19 @@ static void Launch_Thread(void)
 /*
  * Push initial values for general purpose registers.
  */
-static void Push_General_Registers(struct Kernel_Thread* kthread)
+static void Push_General_Registers(struct Kernel_Thread *kthread)
 {
     /*
      * Push initial values for saved general-purpose registers.
      * (The actual values are not important.)
      */
-    Push(kthread, 0);  /* eax */
-    Push(kthread, 0);  /* ebx */
-    Push(kthread, 0);  /* edx */
-    Push(kthread, 0);  /* edx */
-    Push(kthread, 0);  /* esi */
-    Push(kthread, 0);  /* edi */
-    Push(kthread, 0);  /* ebp */
+    Push(kthread, 0); /* eax */
+    Push(kthread, 0); /* ebx */
+    Push(kthread, 0); /* edx */
+    Push(kthread, 0); /* edx */
+    Push(kthread, 0); /* esi */
+    Push(kthread, 0); /* edi */
+    Push(kthread, 0); /* ebp */
 }
 
 /*
@@ -241,7 +241,7 @@ static void Shutdown_Thread(void)
  * Set up the initial context for a kernel-mode-only thread.
  */
 static void Setup_Kernel_Thread(
-    struct Kernel_Thread* kthread,
+    struct Kernel_Thread *kthread,
     Thread_Start_Func startFunc,
     ulong_t arg)
 {
@@ -251,10 +251,10 @@ static void Setup_Kernel_Thread(
      * go away cleanly when the start function returns).
      */
     Push(kthread, arg);
-    Push(kthread, (ulong_t) &Shutdown_Thread);
+    Push(kthread, (ulong_t)&Shutdown_Thread);
 
     /* Push the address of the start function. */
-    Push(kthread, (ulong_t) startFunc);
+    Push(kthread, (ulong_t)startFunc);
 
     /*
      * To make the thread schedulable, we need to make it look
@@ -269,14 +269,14 @@ static void Setup_Kernel_Thread(
      * bit clear, so that interrupts are disabled when the
      * thread starts.
      */
-    Push(kthread, 0UL);  /* EFLAGS */
+    Push(kthread, 0UL); /* EFLAGS */
 
     /*
      * As the "return address" specifying where the new thread will
      * start executing, use the Launch_Thread() function.
      */
     Push(kthread, KERNEL_CS);
-    Push(kthread, (ulong_t) &Launch_Thread);
+    Push(kthread, (ulong_t)&Launch_Thread);
 
     /* Push fake error code and interrupt number. */
     Push(kthread, 0);
@@ -291,17 +291,19 @@ static void Setup_Kernel_Thread(
      * The fs and gs registers are not used by any instruction
      * generated by gcc.
      */
-    Push(kthread, KERNEL_DS);  /* ds */
-    Push(kthread, KERNEL_DS);  /* es */
-    Push(kthread, 0);  /* fs */
-    Push(kthread, 0);  /* gs */
+    Push(kthread, KERNEL_DS); /* ds */
+    Push(kthread, KERNEL_DS); /* es */
+    Push(kthread, 0);         /* fs */
+    Push(kthread, 0);         /* gs */
 }
 
-/*
+/**
+ * 为进程初始化内核栈，
+ * 栈中是为进程首次进入用户态运行时设置处理器状态要使用的数据
  * Set up the a user mode thread.
  */
 /*static*/ void Setup_User_Thread(
-    struct Kernel_Thread* kthread, struct User_Context* userContext)
+    struct Kernel_Thread *kthread, struct User_Context *userContext)
 {
     /*
      * Hints:
@@ -313,9 +315,39 @@ static void Setup_Kernel_Thread(
      * - The esi register should contain the address of
      *   the argument block
      */
-    TODO("Create a new thread to execute in user mode");
-}
+    // TODO("Create a new thread to execute in user mode");
+    ulong_t eflags = EFLAGS_IF;
+    unsigned int csSelector = userContext->csSelector; /* CS 选择子 */
+    unsigned int dsSelector = userContext->dsSelector; /* DS 选择子 */
 
+    /* 调用 Attach_User_Context 加载用户上下文 */
+    Attach_User_Context(kthread, userContext);
+
+    /* 初始化用户态进程堆栈，使之看上去像刚被中断运行一样 */
+    /* 分别调用 Push 函数将以下数据压入堆栈 */
+    Push(kthread, dsSelector);                    /* DS 选择子 */
+    Push(kthread, userContext->stackPointerAddr); /* 堆栈指针 */
+    Push(kthread, eflags);                        /* Eflags */
+    Push(kthread, csSelector);                    /* CS 选择子 */
+    Push(kthread, userContext->entryAddr);        /* 程序计数器 */
+    Push(kthread, 0);                             /* 错误代码(0) */
+    Push(kthread, 0);                             /* 中断号(0) */
+
+    /* 初始化通用寄存单元，向 esi 传递参数块地址 */
+    Push(kthread, 0);                         /* eax */
+    Push(kthread, 0);                         /* ebx */
+    Push(kthread, 0);                         /* ecx */
+    Push(kthread, 0);                         /* edx */
+    Push(kthread, userContext->argBlockAddr); /* esi */
+    Push(kthread, 0);                         /* edi */
+    Push(kthread, 0);                         /* ebp */
+
+    /* 初始化数据段寄存单元 */
+    Push(kthread, dsSelector); /* ds */
+    Push(kthread, dsSelector); /* es */
+    Push(kthread, dsSelector); /* fs */
+    Push(kthread, dsSelector); /* gs */
+}
 
 /*
  * This is the body of the idle thread.  Its job is to preserve
@@ -325,7 +357,7 @@ static void Setup_Kernel_Thread(
 static void Idle(ulong_t arg)
 {
     while (true)
-	Yield();
+        Yield();
 }
 
 /*
@@ -338,40 +370,44 @@ static void Reaper(ulong_t arg)
 
     Disable_Interrupts();
 
-    while (true) {
-	/* See if there are any threads needing disposal. */
-	if ((kthread = s_graveyardQueue.head) == 0) {
-	    /* Graveyard is empty, so wait for a thread to die. */
-	    Wait(&s_reaperWaitQueue);
-	}
-	else {
-	    /* Make the graveyard queue empty. */
-	    Clear_Thread_Queue(&s_graveyardQueue);
+    while (true)
+    {
+        /* See if there are any threads needing disposal. */
+        if ((kthread = s_graveyardQueue.head) == 0)
+        {
+            /* Graveyard is empty, so wait for a thread to die. */
+            Wait(&s_reaperWaitQueue);
+        }
+        else
+        {
+            /* Make the graveyard queue empty. */
+            Clear_Thread_Queue(&s_graveyardQueue);
 
-	    /*
+            /*
 	     * Now we can re-enable interrupts, since we
 	     * have removed all the threads needing disposal.
 	     */
-	    Enable_Interrupts();
-	    Yield();   /* allow other threads to run? */
+            Enable_Interrupts();
+            Yield(); /* allow other threads to run? */
 
-	    /* Dispose of the dead threads. */
-	    while (kthread != 0) {
-		struct Kernel_Thread* next = Get_Next_In_Thread_Queue(kthread);
+            /* Dispose of the dead threads. */
+            while (kthread != 0)
+            {
+                struct Kernel_Thread *next = Get_Next_In_Thread_Queue(kthread);
 #if 0
 		Print("Reaper: disposing of thread @ %x, stack @ %x\n",
 		    kthread, kthread->stackPage);
 #endif
-		Destroy_Thread(kthread);
-		kthread = next;
-	    }
+                Destroy_Thread(kthread);
+                kthread = next;
+            }
 
-	    /*
+            /*
 	     * Disable interrupts again, since we're going to
 	     * do another iteration.
 	     */
-	    Disable_Interrupts();
-	}
+            Disable_Interrupts();
+        }
     }
 }
 
@@ -379,14 +415,15 @@ static void Reaper(ulong_t arg)
  * Find the best (highest priority) thread in given
  * thread queue.  Returns null if queue is empty.
  */
-static __inline__ struct Kernel_Thread* Find_Best(struct Thread_Queue* queue)
+static __inline__ struct Kernel_Thread *Find_Best(struct Thread_Queue *queue)
 {
     /* Pick the highest priority thread */
     struct Kernel_Thread *kthread = queue->head, *best = 0;
-    while (kthread != 0) {
-	if (best == 0 || kthread->priority > best->priority)
-	    best = kthread;
-	kthread = Get_Next_In_Thread_Queue(kthread);
+    while (kthread != 0)
+    {
+        if (best == 0 || kthread->priority > best->priority)
+            best = kthread;
+        kthread = Get_Next_In_Thread_Queue(kthread);
     }
     return best;
 }
@@ -395,9 +432,9 @@ static __inline__ struct Kernel_Thread* Find_Best(struct Thread_Queue* queue)
  * Acquires pointer to thread-local data from the current thread
  * indexed by the given key.  Assumes interrupts are off.
  */
-static __inline__ const void** Get_Tlocal_Pointer(tlocal_key_t k) 
+static __inline__ const void **Get_Tlocal_Pointer(tlocal_key_t k)
 {
-    struct Kernel_Thread* current = g_currentThread;
+    struct Kernel_Thread *current = g_currentThread;
 
     KASSERT(k < MAX_TLOCAL_KEYS);
 
@@ -412,30 +449,34 @@ static __inline__ const void** Get_Tlocal_Pointer(tlocal_key_t k)
  * data to become alive once again.  If everything is NULL by the end
  * of an iteration, we are done.
  */
-static void Tlocal_Exit(struct Kernel_Thread* curr) {
+static void Tlocal_Exit(struct Kernel_Thread *curr)
+{
     int i, j, called = 0;
 
     KASSERT(!Interrupts_Enabled());
 
-    for (j = 0; j<MIN_DESTRUCTOR_ITERATIONS; j++) {
+    for (j = 0; j < MIN_DESTRUCTOR_ITERATIONS; j++)
+    {
 
-        for (i = 0; i<MAX_TLOCAL_KEYS; i++) {
+        for (i = 0; i < MAX_TLOCAL_KEYS; i++)
+        {
 
-	    void *x = (void *)curr->tlocalData[i];
-	    if (x != NULL && s_tlocalDestructors[i] != NULL) {
+            void *x = (void *)curr->tlocalData[i];
+            if (x != NULL && s_tlocalDestructors[i] != NULL)
+            {
 
-	        curr->tlocalData[i] = NULL;
-		called = 1;
+                curr->tlocalData[i] = NULL;
+                called = 1;
 
-		Enable_Interrupts();
-		s_tlocalDestructors[i](x);
-		Disable_Interrupts();
-	    }
-	}
-	if (!called) break;
+                Enable_Interrupts();
+                s_tlocalDestructors[i](x);
+                Disable_Interrupts();
+            }
+        }
+        if (!called)
+            break;
     }
 }
-
 
 /* ----------------------------------------------------------------------
  * Public functions
@@ -443,13 +484,13 @@ static void Tlocal_Exit(struct Kernel_Thread* curr) {
 
 void Init_Scheduler(void)
 {
-    struct Kernel_Thread* mainThread = (struct Kernel_Thread *) KERN_THREAD_OBJ;
+    struct Kernel_Thread *mainThread = (struct Kernel_Thread *)KERN_THREAD_OBJ;
 
     /*
      * Create initial kernel thread context object and stack,
      * and make them current.
      */
-    Init_Thread(mainThread, (void *) KERN_STACK, PRIORITY_NORMAL, true);
+    Init_Thread(mainThread, (void *)KERN_STACK, PRIORITY_NORMAL, true);
     g_currentThread = mainThread;
     Add_To_Back_Of_All_Thread_List(&s_allThreadList, mainThread);
 
@@ -477,24 +518,23 @@ void Init_Scheduler(void)
  *    most things
  * detached - use false for kernel threads
  */
-struct Kernel_Thread* Start_Kernel_Thread(
+struct Kernel_Thread *Start_Kernel_Thread(
     Thread_Start_Func startFunc,
     ulong_t arg,
     int priority,
-    bool detached
-)
+    bool detached)
 {
-    struct Kernel_Thread* kthread = Create_Thread(priority, detached);
-    if (kthread != 0) {
-	/*
+    struct Kernel_Thread *kthread = Create_Thread(priority, detached);
+    if (kthread != 0)
+    {
+        /*
 	 * Create the initial context for the thread to make
 	 * it schedulable.
 	 */
-	Setup_Kernel_Thread(kthread, startFunc, arg);
+        Setup_Kernel_Thread(kthread, startFunc, arg);
 
-
-	/* Atomically put the thread on the run queue. */
-	Make_Runnable_Atomic(kthread);
+        /* Atomically put the thread on the run queue. */
+        Make_Runnable_Atomic(kthread);
     }
 
     return kthread;
@@ -504,8 +544,8 @@ struct Kernel_Thread* Start_Kernel_Thread(
  * Start a user-mode thread (i.e., a process), using given user context.
  * Returns pointer to the new thread if successful, null otherwise.
  */
-struct Kernel_Thread*
-Start_User_Thread(struct User_Context* userContext, bool detached)
+struct Kernel_Thread *
+Start_User_Thread(struct User_Context *userContext, bool detached)
 {
     /*
      * Hints:
@@ -515,14 +555,33 @@ Start_User_Thread(struct User_Context* userContext, bool detached)
      * - Call Make_Runnable_Atomic() to schedule the process
      *   for execution
      */
-    TODO("Start user thread");
+    // TODO("Start user thread");
+    /* 如果传入的用户上下文字段为空(非用户态进程)则返回错误 */
+    if (userContext == NULL)
+    {
+        return NULL;
+    }
+
+    /* 建立用户态进程 */
+    struct Kernel_Thread *kthread = Create_Thread(PRIORITY_USER, detached);
+    if (kthread == NULL)
+    {
+        return NULL;
+    }
+    Setup_User_Thread(kthread, userContext);
+
+    /* 将新创建的进程加入就绪进程队列 */
+    Make_Runnable_Atomic(kthread);
+
+    /* 新用户态进程创建成功，返回指向该进程的指针 */
+    return kthread;
 }
 
 /*
  * Add given thread to the run queue, so that it
  * may be scheduled.  Must be called with interrupts disabled!
  */
-void Make_Runnable(struct Kernel_Thread* kthread)
+void Make_Runnable(struct Kernel_Thread *kthread)
 {
     KASSERT(!Interrupts_Enabled());
 
@@ -533,7 +592,7 @@ void Make_Runnable(struct Kernel_Thread* kthread)
  * Atomically make a thread runnable.
  * Assumes interrupts are currently enabled.
  */
-void Make_Runnable_Atomic(struct Kernel_Thread* kthread)
+void Make_Runnable_Atomic(struct Kernel_Thread *kthread)
 {
     Disable_Interrupts();
     Make_Runnable(kthread);
@@ -543,7 +602,7 @@ void Make_Runnable_Atomic(struct Kernel_Thread* kthread)
 /*
  * Get the thread that currently has the CPU.
  */
-struct Kernel_Thread* Get_Current(void)
+struct Kernel_Thread *Get_Current(void)
 {
     return g_currentThread;
 }
@@ -552,15 +611,15 @@ struct Kernel_Thread* Get_Current(void)
  * Get the next runnable thread from the run queue.
  * This is the scheduler.
  */
-struct Kernel_Thread* Get_Next_Runnable(void)
+struct Kernel_Thread *Get_Next_Runnable(void)
 {
-    struct Kernel_Thread* best = 0;
+    struct Kernel_Thread *best = 0;
 
     best = Find_Best(&s_runQueue);
     KASSERT(best != 0);
     Remove_Thread(&s_runQueue, best);
 
-/*
+    /*
  *    Print("Scheduling %x\n", best);
  */
     return best;
@@ -576,7 +635,7 @@ struct Kernel_Thread* Get_Next_Runnable(void)
  */
 void Schedule(void)
 {
-    struct Kernel_Thread* runnable;
+    struct Kernel_Thread *runnable;
 
     /* Make sure interrupts really are disabled */
     KASSERT(!Interrupts_Enabled());
@@ -614,10 +673,10 @@ void Yield(void)
  */
 void Exit(int exitCode)
 {
-    struct Kernel_Thread* current = g_currentThread;
+    struct Kernel_Thread *current = g_currentThread;
 
     if (Interrupts_Enabled())
-	Disable_Interrupts();
+        Disable_Interrupts();
 
     /* Thread is dead */
     current->exitCode = exitCode;
@@ -648,7 +707,7 @@ void Exit(int exitCode)
  * Interrupts must be enabled.
  * Returns the thread exit code.
  */
-int Join(struct Kernel_Thread* kthread)
+int Join(struct Kernel_Thread *kthread)
 {
     int exitCode;
 
@@ -660,8 +719,9 @@ int Join(struct Kernel_Thread* kthread)
     Disable_Interrupts();
 
     /* Wait for it to die */
-    while (kthread->alive) {
-	Wait(&kthread->joinQueue);
+    while (kthread->alive)
+    {
+        Wait(&kthread->joinQueue);
     }
 
     /* Get thread exit code. */
@@ -679,7 +739,7 @@ int Join(struct Kernel_Thread* kthread)
  * Look up a thread by its process id.
  * The caller must be the thread's owner.
  */
-struct Kernel_Thread* Lookup_Thread(int pid)
+struct Kernel_Thread *Lookup_Thread(int pid)
 {
     struct Kernel_Thread *result = 0;
 
@@ -692,20 +752,21 @@ struct Kernel_Thread* Lookup_Thread(int pid)
      */
 
     result = Get_Front_Of_All_Thread_List(&s_allThreadList);
-    while (result != 0) {
-	if (result->pid == pid) {
-	    if (g_currentThread != result->owner)
-		result = 0;
-	    break;
-	}
-	result = Get_Next_In_All_Thread_List(result);
+    while (result != 0)
+    {
+        if (result->pid == pid)
+        {
+            if (g_currentThread != result->owner)
+                result = 0;
+            break;
+        }
+        result = Get_Next_In_All_Thread_List(result);
     }
 
     End_Int_Atomic(iflag);
 
     return result;
 }
-
 
 /*
  * Wait on given wait queue.
@@ -717,9 +778,9 @@ struct Kernel_Thread* Lookup_Thread(int pid)
  * See the Wait_For_Key() function in keyboard.c
  * for an example.
  */
-void Wait(struct Thread_Queue* waitQueue)
+void Wait(struct Thread_Queue *waitQueue)
 {
-    struct Kernel_Thread* current = g_currentThread;
+    struct Kernel_Thread *current = g_currentThread;
 
     KASSERT(!Interrupts_Enabled());
 
@@ -736,7 +797,7 @@ void Wait(struct Thread_Queue* waitQueue)
  * See Keyboard_Interrupt_Handler() function in keyboard.c
  * for an example.
  */
-void Wake_Up(struct Thread_Queue* waitQueue)
+void Wake_Up(struct Thread_Queue *waitQueue)
 {
     struct Kernel_Thread *kthread = waitQueue->head, *next;
 
@@ -746,10 +807,11 @@ void Wake_Up(struct Thread_Queue* waitQueue)
      * Walk throught the list of threads in the wait queue,
      * transferring each one to the run queue.
      */
-    while (kthread != 0) {
-	next = Get_Next_In_Thread_Queue(kthread);
-	Make_Runnable(kthread);
-	kthread = next;
+    while (kthread != 0)
+    {
+        next = Get_Next_In_Thread_Queue(kthread);
+        Make_Runnable(kthread);
+        kthread = next;
     }
 
     /* The wait queue is now empty. */
@@ -761,43 +823,45 @@ void Wake_Up(struct Thread_Queue* waitQueue)
  * (if there are any threads waiting).  Chooses the highest priority thread.
  * Interrupts must be disabled!
  */
-void Wake_Up_One(struct Thread_Queue* waitQueue)
+void Wake_Up_One(struct Thread_Queue *waitQueue)
 {
-    struct Kernel_Thread* best;
+    struct Kernel_Thread *best;
 
     KASSERT(!Interrupts_Enabled());
 
     best = Find_Best(waitQueue);
 
-    if (best != 0) {
-	Remove_Thread(waitQueue, best);
-	Make_Runnable(best);
-	/*Print("Wake_Up_One: waking up %x from %x\n", best, g_currentThread); */
+    if (best != 0)
+    {
+        Remove_Thread(waitQueue, best);
+        Make_Runnable(best);
+        /*Print("Wake_Up_One: waking up %x from %x\n", best, g_currentThread); */
     }
 }
 
 /*
  * Allocate a key for accessing thread-local data.
  */
-int Tlocal_Create(tlocal_key_t *key, tlocal_destructor_t destructor) 
+int Tlocal_Create(tlocal_key_t *key, tlocal_destructor_t destructor)
 {
     KASSERT(key);
 
     bool iflag = Begin_Int_Atomic();
 
-    if (s_tlocalKeyCounter == MAX_TLOCAL_KEYS) return -1;
+    if (s_tlocalKeyCounter == MAX_TLOCAL_KEYS)
+        return -1;
     s_tlocalDestructors[s_tlocalKeyCounter] = destructor;
     *key = s_tlocalKeyCounter++;
 
     End_Int_Atomic(iflag);
-  
+
     return 0;
 }
 
 /*
  * Store a value for a thread-local item
  */
-void Tlocal_Put(tlocal_key_t k, const void *v) 
+void Tlocal_Put(tlocal_key_t k, const void *v)
 {
     const void **pv;
 
@@ -810,7 +874,7 @@ void Tlocal_Put(tlocal_key_t k, const void *v)
 /*
  * Acquire a thread-local value
  */
-void *Tlocal_Get(tlocal_key_t k) 
+void *Tlocal_Get(tlocal_key_t k)
 {
     const void **pv;
 
@@ -833,14 +897,15 @@ void Dump_All_Thread_List(void)
     kthread = Get_Front_Of_All_Thread_List(&s_allThreadList);
 
     Print("[");
-    while (kthread != 0) {
-	++count;
-	Print("<%lx,%lx,%lx>",
-	    (ulong_t) Get_Prev_In_All_Thread_List(kthread),
-	    (ulong_t) kthread,
-	    (ulong_t) Get_Next_In_All_Thread_List(kthread));
-	KASSERT(kthread != Get_Next_In_All_Thread_List(kthread));
-	kthread = Get_Next_In_All_Thread_List(kthread);
+    while (kthread != 0)
+    {
+        ++count;
+        Print("<%lx,%lx,%lx>",
+              (ulong_t)Get_Prev_In_All_Thread_List(kthread),
+              (ulong_t)kthread,
+              (ulong_t)Get_Next_In_All_Thread_List(kthread));
+        KASSERT(kthread != Get_Next_In_All_Thread_List(kthread));
+        kthread = Get_Next_In_All_Thread_List(kthread);
     }
     Print("]\n");
     Print("%d threads are running\n", count);
