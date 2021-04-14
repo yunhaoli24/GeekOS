@@ -103,7 +103,7 @@ TARGET_CC := $(TARGET_CC_PREFIX)gcc -m32
 # the host platform, not the target (x86) platform.  On x86/ELF
 # systems, such as Linux and FreeBSD, it can generally be the same
 # as the target C compiler.
-HOST_CC := gcc -m32
+HOST_CC := gcc
 
 # Target linker.  GNU ld is probably to only one that will work.
 TARGET_LD := $(TARGET_CC_PREFIX)ld -m elf_i386

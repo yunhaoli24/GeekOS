@@ -25,20 +25,22 @@
  * Private functions and data
  * ---------------------------------------------------------------------- */
 
-#define ESC ((char) 0x1B)
+#define ESC ((char)0x1B)
 #define DEFAULT_ATTRIBUTE ATTRIB(BLACK, GRAY)
 
-enum State {
-    S_NORMAL,		/* Normal state - output is echoed verbatim */
-    S_ESC,		/* Saw ESC character - begin output escape sequence */
-    S_ESC2,		/* Saw '[' character - continue output escape sequence */
-    S_ARG,		/* Scanning a numeric argument */
-    S_CMD,		/* Command */
+enum State
+{
+    S_NORMAL, /* Normal state - output is echoed verbatim */
+    S_ESC,    /* Saw ESC character - begin output escape sequence */
+    S_ESC2,   /* Saw '[' character - continue output escape sequence */
+    S_ARG,    /* Scanning a numeric argument */
+    S_CMD,    /* Command */
 };
 
-#define MAXARGS 8	/* Max args that can be passed to esc sequence */
+#define MAXARGS 8 /* Max args that can be passed to esc sequence */
 
-struct Console_State {
+struct Console_State
+{
     /* Current state information */
     int row, col;
     int saveRow, saveCol;
@@ -53,9 +55,9 @@ struct Console_State {
 static struct Console_State s_cons;
 
 #define NUM_SCREEN_DWORDS ((NUMROWS * NUMCOLS * 2) / 4)
-#define NUM_SCROLL_DWORDS (((NUMROWS-1) * NUMCOLS * 2) / 4)
-#define NUM_DWORDS_PER_LINE ((NUMCOLS*2)/4)
-#define FILL_DWORD (0x00200020 | (s_cons.currentAttr<<24) | (s_cons.currentAttr<<8))
+#define NUM_SCROLL_DWORDS (((NUMROWS - 1) * NUMCOLS * 2) / 4)
+#define NUM_DWORDS_PER_LINE ((NUMCOLS * 2) / 4)
+#define FILL_DWORD (0x00200020 | (s_cons.currentAttr << 24) | (s_cons.currentAttr << 8))
 
 /*
  * Scroll the display one line.
@@ -63,19 +65,20 @@ static struct Console_State s_cons;
  */
 static void Scroll(void)
 {
-    uint_t* v;
+    uint_t *v;
     int i, n = NUM_SCROLL_DWORDS;
     uint_t fill = FILL_DWORD;
 
     /* Move lines 1..NUMROWS-1 up one position. */
-    for (v = (uint_t*)VIDMEM, i = 0; i < n; ++i) {
-	*v = *(v + NUM_DWORDS_PER_LINE);
-	++v;
+    for (v = (uint_t *)VIDMEM, i = 0; i < n; ++i)
+    {
+        *v = *(v + NUM_DWORDS_PER_LINE);
+        ++v;
     }
 
     /* Clear out last line. */
-    for (v = (uint_t*)VIDMEM + n, i = 0; i < NUM_DWORDS_PER_LINE; ++i)
-	*v++ = fill;
+    for (v = (uint_t *)VIDMEM + n, i = 0; i < NUM_DWORDS_PER_LINE; ++i)
+        *v++ = fill;
 }
 
 /*
@@ -85,10 +88,11 @@ static void Scroll(void)
 static void Clear_To_EOL(void)
 {
     int n = (NUMCOLS - s_cons.col);
-    uchar_t* v = VIDMEM + s_cons.row*(NUMCOLS*2) + s_cons.col*2;
-    while (n-- > 0) {
-	*v++ = ' ';
-	*v++ = s_cons.currentAttr;
+    uchar_t *v = VIDMEM + s_cons.row * (NUMCOLS * 2) + s_cons.col * 2;
+    while (n-- > 0)
+    {
+        *v++ = ' ';
+        *v++ = s_cons.currentAttr;
     }
 }
 
@@ -100,9 +104,10 @@ static void Newline(void)
 {
     ++s_cons.row;
     s_cons.col = 0;
-    if (s_cons.row == NUMROWS) {
-	Scroll();
-	s_cons.row = NUMROWS - 1;
+    if (s_cons.row == NUMROWS)
+    {
+        Scroll();
+        s_cons.row = NUMROWS - 1;
     }
 }
 
@@ -113,16 +118,16 @@ static void Newline(void)
  */
 static void Put_Graphic_Char(int c)
 {
-    uchar_t* v = VIDMEM + s_cons.row*(NUMCOLS*2) + s_cons.col*2;
+    uchar_t *v = VIDMEM + s_cons.row * (NUMCOLS * 2) + s_cons.col * 2;
 
     /* Put character at current position */
-    *v++ = (uchar_t) c;
+    *v++ = (uchar_t)c;
     *v = s_cons.currentAttr;
 
     if (s_cons.col < NUMCOLS - 1)
-	++s_cons.col;
+        ++s_cons.col;
     else
-	Newline();
+        Newline();
 }
 
 /*
@@ -134,21 +139,22 @@ static void Output_Literal_Character(int c)
 {
     int numSpaces;
 
-    switch (c) {
+    switch (c)
+    {
     case '\n':
-	Clear_To_EOL();
-	Newline();
-	break;
+        Clear_To_EOL();
+        Newline();
+        break;
 
     case '\t':
-	numSpaces = TABWIDTH - (s_cons.col % TABWIDTH);
-	while (numSpaces-- > 0)
-	    Put_Graphic_Char(' ');
-	break;
+        numSpaces = TABWIDTH - (s_cons.col % TABWIDTH);
+        while (numSpaces-- > 0)
+            Put_Graphic_Char(' ');
+        break;
 
     default:
-	Put_Graphic_Char(c);
-	break;
+        Put_Graphic_Char(c);
+        break;
     }
 
 #ifndef NDEBUG
@@ -168,14 +174,14 @@ static void Output_Literal_Character(int c)
 static void Move_Cursor(int row, int col)
 {
     if (row < 0)
-	row = 0;
+        row = 0;
     else if (row >= NUMROWS)
-	row = NUMROWS - 1;
+        row = NUMROWS - 1;
 
     if (col < 0)
-	col = 0;
+        col = 0;
     else if (col >= NUMCOLS)
-	col = NUMCOLS - 1;
+        col = NUMCOLS - 1;
 
     s_cons.row = row;
     s_cons.col = col;
@@ -185,8 +191,7 @@ static void Move_Cursor(int row, int col)
  * Table mapping ANSI colors to VGA text mode colors.
  */
 static const uchar_t s_ansiToVgaColor[] = {
-    BLACK,RED,GREEN,AMBER,BLUE,MAGENTA,CYAN,GRAY
-};
+    BLACK, RED, GREEN, AMBER, BLUE, MAGENTA, CYAN, GRAY};
 
 /*
  * Update the attributes specified by the arguments
@@ -197,16 +202,17 @@ static void Update_Attributes(void)
     int i;
     int attr = s_cons.currentAttr & ~(BRIGHT);
 
-    for (i = 0; i < s_cons.numArgs; ++i) {
-	int value = s_cons.argList[i];
-	if (value == 0)
-	    attr = DEFAULT_ATTRIBUTE;
-	else if (value == 1)
-	    attr |= BRIGHT;
-	else if (value >= 30 && value <= 37)
-	    attr = (attr & ~0x7) | s_ansiToVgaColor[value - 30];
-	else if (value >= 40 && value <= 47)
-	    attr = (attr & ~(0x7 << 4)) | (s_ansiToVgaColor[value - 40] << 4);
+    for (i = 0; i < s_cons.numArgs; ++i)
+    {
+        int value = s_cons.argList[i];
+        if (value == 0)
+            attr = DEFAULT_ATTRIBUTE;
+        else if (value == 1)
+            attr |= BRIGHT;
+        else if (value >= 30 && value <= 37)
+            attr = (attr & ~0x7) | s_ansiToVgaColor[value - 30];
+        else if (value >= 40 && value <= 47)
+            attr = (attr & ~(0x7 << 4)) | (s_ansiToVgaColor[value - 40] << 4);
     }
     s_cons.currentAttr = attr;
 }
@@ -232,7 +238,7 @@ static void Start_Arg(int argNum)
     s_cons.numArgs++;
     s_cons.state = S_ARG;
     if (argNum < MAXARGS)
-	s_cons.argList[argNum] = 0;
+        s_cons.argList[argNum] = 0;
 }
 
 /* Save current cursor position. */
@@ -253,10 +259,11 @@ static void Restore_Cursor(void)
 static void Add_Digit(int c)
 {
     KASSERT(ISDIGIT(c));
-    if (s_cons.numArgs < MAXARGS) {
-	int argNum = s_cons.numArgs - 1;
-	s_cons.argList[argNum] *= 10;
-	s_cons.argList[argNum] += (c - '0');
+    if (s_cons.numArgs < MAXARGS)
+    {
+        int argNum = s_cons.numArgs - 1;
+        s_cons.argList[argNum] *= 10;
+        s_cons.argList[argNum] += (c - '0');
     }
 }
 
@@ -278,72 +285,103 @@ static int Get_Arg(int argNum)
 static void Put_Char_Imp(int c)
 {
 again:
-    switch (s_cons.state) {
+    switch (s_cons.state)
+    {
     case S_NORMAL:
-	if (c == ESC)
-	    Start_Escape();
-	else
-	    Output_Literal_Character(c);
-	break;
+        if (c == ESC)
+            Start_Escape();
+        else
+            Output_Literal_Character(c);
+        break;
 
     case S_ESC:
-	if (c == '[')
-	    s_cons.state = S_ESC2;
-	else
-	    Reset();
-	break;
+        if (c == '[')
+            s_cons.state = S_ESC2;
+        else
+            Reset();
+        break;
 
     case S_ESC2:
-	if (ISDIGIT(c)) {
-	    Start_Arg(0);
-	    goto again;
-	} else if (c == ';') {
-	    /* Special case: for "n;m" commands, "n" is implicitly 1 if omitted */
-	    Start_Arg(0);
-	    Add_Digit('1');
-	    Start_Arg(1);
-	} else {
-	    s_cons.state = S_CMD;
-	    goto again;
-	}
-	break;
+        if (ISDIGIT(c))
+        {
+            Start_Arg(0);
+            goto again;
+        }
+        else if (c == ';')
+        {
+            /* Special case: for "n;m" commands, "n" is implicitly 1 if omitted */
+            Start_Arg(0);
+            Add_Digit('1');
+            Start_Arg(1);
+        }
+        else
+        {
+            s_cons.state = S_CMD;
+            goto again;
+        }
+        break;
 
     case S_ARG:
-	if (ISDIGIT(c))
-	    Add_Digit(c);
-	else if (c == ';')
-	    Start_Arg(s_cons.numArgs);
-	else {
-	    s_cons.state = S_CMD;
-	    goto again;
-	}
-	break;
+        if (ISDIGIT(c))
+            Add_Digit(c);
+        else if (c == ';')
+            Start_Arg(s_cons.numArgs);
+        else
+        {
+            s_cons.state = S_CMD;
+            goto again;
+        }
+        break;
 
     case S_CMD:
-	switch (c) {
-	case 'K': Clear_To_EOL(); break;
-	case 's': Save_Cursor(); break;
-	case 'u': Restore_Cursor(); break;
-	case 'A': Move_Cursor(s_cons.row - Get_Arg(0), s_cons.col); break;
-	case 'B': Move_Cursor(s_cons.row + Get_Arg(0), s_cons.col); break;
-	case 'C': Move_Cursor(s_cons.row, s_cons.col + Get_Arg(0)); break;
-	case 'D': Move_Cursor(s_cons.row, s_cons.col - Get_Arg(0)); break;
-	case 'm': Update_Attributes(); break;
-	case 'f': case 'H':
-	    if (s_cons.numArgs == 2) Move_Cursor(Get_Arg(0)-1, Get_Arg(1)-1); break;
-	case 'J':
-	    if (s_cons.numArgs == 1 && Get_Arg(0) == 2) {
-		Clear_Screen();
-		Put_Cursor(0, 0);
-	    }
-	    break;
-	default: break;
-	}
-	Reset();
-	break;
+        switch (c)
+        {
+        case 'K':
+            Clear_To_EOL();
+            break;
+        case 's':
+            Save_Cursor();
+            break;
+        case 'u':
+            Restore_Cursor();
+            break;
+        case 'A':
+            Move_Cursor(s_cons.row - Get_Arg(0), s_cons.col);
+            break;
+        case 'B':
+            Move_Cursor(s_cons.row + Get_Arg(0), s_cons.col);
+            break;
+        case 'C':
+            Move_Cursor(s_cons.row, s_cons.col + Get_Arg(0));
+            break;
+        case 'D':
+            Move_Cursor(s_cons.row, s_cons.col - Get_Arg(0));
+            break;
+        case 'm':
+            Update_Attributes();
+            break;
+        case 'f':
+        case 'H':
+            if (s_cons.numArgs == 2)
+            {
+                Move_Cursor(Get_Arg(0) - 1, Get_Arg(1) - 1);
+            }
+            break;
+        case 'J':
+            if (s_cons.numArgs == 1 && Get_Arg(0) == 2)
+            {
+                Clear_Screen();
+                Put_Cursor(0, 0);
+            }
+            break;
+        default:
+            break;
+        }
+        Reset();
+        break;
 
     default:
-	KASSERT(false);
+        KASSERT(false);
     }
 }
 
@@ -370,7 +408,7 @@ static void Update_Cursor(void)
     /* Set the high cursor location byte */
     Out_Byte(CRT_ADDR_REG, CRT_CURSOR_LOC_HIGH_REG);
     IO_Delay();
-    Out_Byte(CRT_DATA_REG, (characterPos>>8) & 0xff);
+    Out_Byte(CRT_DATA_REG, (characterPos >> 8) & 0xff);
     IO_Delay();
 
     /* Set the low cursor location byte */
@@ -406,14 +444,14 @@ void Init_Screen(void)
  */
 void Clear_Screen(void)
 {
-    uint_t* v = (uint_t*)VIDMEM;
+    uint_t *v = (uint_t *)VIDMEM;
     int i;
     uint_t fill = FILL_DWORD;
 
     bool iflag = Begin_Int_Atomic();
 
     for (i = 0; i < NUM_SCREEN_DWORDS; ++i)
-	*v++ = fill;
+        *v++ = fill;
 
     End_Int_Atomic(iflag);
 }
@@ -421,7 +459,7 @@ void Clear_Screen(void)
 /*
  * Get current cursor position.
  */
-void Get_Cursor(int* row, int* col)
+void Get_Cursor(int *row, int *col)
 {
     bool iflag = Begin_Int_Atomic();
     *row = s_cons.row;
@@ -439,7 +477,7 @@ bool Put_Cursor(int row, int col)
     bool iflag;
 
     if (row < 0 || row >= NUMROWS || col < 0 || col >= NUMCOLS)
-	return false;
+        return false;
 
     iflag = Begin_Int_Atomic();
     s_cons.row = row;
@@ -484,11 +522,11 @@ void Put_Char(int c)
  * Write a string of characters to the screen at current cursor
  * position using current attribute.
  */
-void Put_String(const char* s)
+void Put_String(const char *s)
 {
     bool iflag = Begin_Int_Atomic();
     while (*s != '\0')
-	Put_Char_Imp(*s++);
+        Put_Char_Imp(*s++);
     Update_Cursor();
     End_Int_Atomic(iflag);
 }
@@ -497,12 +535,13 @@ void Put_String(const char* s)
  * Write a buffer of characters at current cursor position
  * using current attribute.
  */
-void Put_Buf(const char* buf, ulong_t length)
+void Put_Buf(const char *buf, ulong_t length)
 {
     bool iflag = Begin_Int_Atomic();
-    while (length > 0) {
-	Put_Char_Imp(*buf++);
-	--length;
+    while (length > 0)
+    {
+        Put_Char_Imp(*buf++);
+        --length;
     }
     Update_Cursor();
     End_Int_Atomic(iflag);
@@ -511,7 +550,7 @@ void Put_Buf(const char* buf, ulong_t length)
 /* Support for Print(). */
 static void Print_Emit(struct Output_Sink *o, int ch) { Put_Char_Imp(ch); }
 static void Print_Finish(struct Output_Sink *o) { Update_Cursor(); }
-static struct Output_Sink s_outputSink = { &Print_Emit, &Print_Finish };
+static struct Output_Sink s_outputSink = {&Print_Emit, &Print_Finish};
 
 /*
  * Print to console using printf()-style formatting.
@@ -529,4 +568,3 @@ void Print(const char *fmt, ...)
 
     End_Int_Atomic(iflag);
 }
-
