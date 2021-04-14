@@ -1,0 +1,263 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="malloc.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="mem.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="pfat.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="argblock.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="bget.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="bitset.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="blockdev.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="crc32.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="dma.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="elf.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="floppy.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="gdt.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ide.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="idt.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="int.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="io.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="irq.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="keyboard.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="kthread.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="main.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="synch.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="syscall.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="timer.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="trap.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="tss.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="user.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="userseg.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="vfs.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="screen.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="segment.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bootsect.asm">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="defs.asm">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="depend.mak">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="destroyThread">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="fd_boot.asm">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="lowlevel.asm">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="setup.asm">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="symbol.asm">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="util.asm">
+      <Filter>源文件</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="geekos\argblock.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\bget.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\bitset.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\blockdev.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\bootinfo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\crc32.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\defs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\dma.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\elf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\errno.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\fileio.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\floppy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\fmtout.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\gdt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\ide.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\idt.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\int.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\io.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\irq.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\kassert.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\keyboard.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\kthread.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\ktypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\list.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\malloc.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\mem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\pfat.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\range.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\screen.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\segment.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\symbol.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\synch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\syscall.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\timer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\trap.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\tss.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\user.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="geekos\vfs.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="libc\fmtout.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="libc\string.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

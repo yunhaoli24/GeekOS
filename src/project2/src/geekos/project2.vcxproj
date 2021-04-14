@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FD3F7D25-25FA-4B53-AB73-1697F2AF5AD7}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>project2</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\Users\Admin\Documents\Visual Studio 2013\Projects\project2\project2;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="argblock.c" />
+    <ClCompile Include="bget.c" />
+    <ClCompile Include="bitset.c" />
+    <ClCompile Include="blockdev.c" />
+    <ClCompile Include="crc32.c" />
+    <ClCompile Include="dma.c" />
+    <ClCompile Include="elf.c" />
+    <ClCompile Include="floppy.c" />
+    <ClCompile Include="gdt.c" />
+    <ClCompile Include="ide.c" />
+    <ClCompile Include="idt.c" />
+    <ClCompile Include="int.c" />
+    <ClCompile Include="io.c" />
+    <ClCompile Include="irq.c" />
+    <ClCompile Include="keyboard.c" />
+    <ClCompile Include="kthread.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="malloc.c" />
+    <ClCompile Include="mem.c" />
+    <ClCompile Include="pfat.c" />
+    <ClCompile Include="screen.c" />
+    <ClCompile Include="segment.c" />
+    <ClCompile Include="synch.c" />
+    <ClCompile Include="syscall.c" />
+    <ClCompile Include="timer.c" />
+    <ClCompile Include="trap.c" />
+    <ClCompile Include="tss.c" />
+    <ClCompile Include="user.c" />
+    <ClCompile Include="userseg.c" />
+    <ClCompile Include="vfs.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bootsect.asm" />
+    <None Include="defs.asm" />
+    <None Include="depend.mak" />
+    <None Include="destroyThread" />
+    <None Include="fd_boot.asm" />
+    <None Include="lowlevel.asm" />
+    <None Include="setup.asm" />
+    <None Include="symbol.asm" />
+    <None Include="util.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="geekos\argblock.h" />
+    <ClInclude Include="geekos\bget.h" />
+    <ClInclude Include="geekos\bitset.h" />
+    <ClInclude Include="geekos\blockdev.h" />
+    <ClInclude Include="geekos\bootinfo.h" />
+    <ClInclude Include="geekos\crc32.h" />
+    <ClInclude Include="geekos\defs.h" />
+    <ClInclude Include="geekos\dma.h" />
+    <ClInclude Include="geekos\elf.h" />
+    <ClInclude Include="geekos\errno.h" />
+    <ClInclude Include="geekos\fileio.h" />
+    <ClInclude Include="geekos\floppy.h" />
+    <ClInclude Include="geekos\fmtout.h" />
+    <ClInclude Include="geekos\gdt.h" />
+    <ClInclude Include="geekos\ide.h" />
+    <ClInclude Include="geekos\idt.h" />
+    <ClInclude Include="geekos\int.h" />
+    <ClInclude Include="geekos\io.h" />
+    <ClInclude Include="geekos\irq.h" />
+    <ClInclude Include="geekos\kassert.h" />
+    <ClInclude Include="geekos\keyboard.h" />
+    <ClInclude Include="geekos\kthread.h" />
+    <ClInclude Include="geekos\ktypes.h" />
+    <ClInclude Include="geekos\list.h" />
+    <ClInclude Include="geekos\malloc.h" />
+    <ClInclude Include="geekos\mem.h" />
+    <ClInclude Include="geekos\pfat.h" />
+    <ClInclude Include="geekos\range.h" />
+    <ClInclude Include="geekos\screen.h" />
+    <ClInclude Include="geekos\segment.h" />
+    <ClInclude Include="geekos\string.h" />
+    <ClInclude Include="geekos\symbol.h" />
+    <ClInclude Include="geekos\synch.h" />
+    <ClInclude Include="geekos\syscall.h" />
+    <ClInclude Include="geekos\timer.h" />
+    <ClInclude Include="geekos\trap.h" />
+    <ClInclude Include="geekos\tss.h" />
+    <ClInclude Include="geekos\user.h" />
+    <ClInclude Include="geekos\vfs.h" />
+    <ClInclude Include="libc\fmtout.h" />
+    <ClInclude Include="libc\string.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

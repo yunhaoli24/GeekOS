@@ -1,0 +1,7 @@
+
+megs: 8
+boot: a
+
+
+floppya: 1_44=fd.img, status=inserted
+

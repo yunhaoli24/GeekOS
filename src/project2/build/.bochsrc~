@@ -1,0 +1,6 @@
+megs: 8
+boot: a
+ata0-master:type=disk, mode=flat, path="diskc.img", cylinders=0
+floppya: 1_44=fd.img, status=inserted
+romimage:file=$BXSHARE/BIOS-bochs-latest
+log: ./bochs.out
