@@ -105,7 +105,8 @@ USER_C_SRCS := \
 	semtest1.c semtest2.c p1.c p2.c p3.c \
 	schedtest.c sched1.c sched2.c sched3.c \
 	ping.c pong.c long.c \
-	shell.c b.c c.c
+	shell.c b.c c.c \
+	semtest.c null.c
 # User executables
 USER_PROGS := $(USER_C_SRCS:%.c=user/%.exe)
 

@@ -17,6 +17,11 @@ struct Kernel_Thread;
 struct User_Context;
 struct Interrupt_State;
 
+#define ROUND_ROBIN 0 //轮询 
+#define MULTILEVEL_FEEDBACK 1 //多级反馈
+int g_schedulingPolicy;
+int g_Quantum;
+
 /*
  * Queue of threads.
  * This is used for the run queue(s), and also for
@@ -111,6 +116,7 @@ struct Kernel_Thread* Start_Kernel_Thread(
     int priority,
     bool detached
 );
+int Chang_Scheduling_Policy(int policy, int quantum);
 struct Kernel_Thread* Start_User_Thread(struct User_Context* userContext, bool detached);
 void Make_Runnable(struct Kernel_Thread* kthread);
 void Make_Runnable_Atomic(struct Kernel_Thread* kthread);

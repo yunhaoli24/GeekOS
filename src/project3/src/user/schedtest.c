@@ -4,29 +4,37 @@
 #include <sema.h>
 #include <string.h>
 
-#if !defined (NULL)
+#if !defined(NULL)
 #define NULL 0
 #endif
 
-int main(int argc , char ** argv)
+int main(int argc, char **argv)
 {
   int policy = -1;
   int quantum;
 
-  int id1, id2, id3;    	/* ID of child process */
+  int id1, id2, id3; /* ID of child process */
 
-  if (argc == 3) {
-    if (!strcmp(argv[1], "rr")) {
-      policy = 0;
-    } else if (!strcmp(argv[1], "mlf")) {
-      policy = 1;
-    } else {
+  if (argc == 3)
+  {
+    if (!strcmp(argv[1], "rr"))
+    {
+      policy = 0;//选择时间片轮转调度
+    }
+    else if (!strcmp(argv[1], "mlf"))
+    {
+      policy = 1;//选择多级反馈调度
+    }
+    else
+    {
       Print("usage: %s [rr|mlf] <quantum>\n", argv[0]);
       Exit(1);
     }
-    quantum = atoi(argv[2]);
+    quantum = atoi(argv[2]);//设置时间片长度
     Set_Scheduling_Policy(policy, quantum);
-  } else {
+  }
+  else
+  {
     Print("usage: %s [rr|mlf] <quantum>\n", argv[0]);
     Exit(1);
   }
@@ -34,12 +42,10 @@ int main(int argc , char ** argv)
   quantum = atoi(argv[2]);
   Set_Scheduling_Policy(policy, quantum);
 
+  id3 = Spawn_Program("/c/sched3.exe", "/c/sched3.exe");
+  id1 = Spawn_Program("/c/sched1.exe", "/c/sched1.exe");
+  id2 = Spawn_Program("/c/sched2.exe", "/c/sched2.exe");
 
-  id3 = Spawn_Program ( "/c/sched3.exe", "/c/sched3.exe") ;
-  id1 = Spawn_Program ( "/c/sched1.exe", "/c/sched1.exe") ;
-  id2 = Spawn_Program ( "/c/sched2.exe", "/c/sched2.exe") ;
-
-  
   Wait(id1);
   Wait(id2);
   Wait(id3);
