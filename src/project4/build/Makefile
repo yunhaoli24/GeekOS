@@ -130,7 +130,7 @@ USER_ENTRY = $(SYM_PFX)_Entry
 #TARGET_CC_PREFIX := i386-elf-
 
 # Target C compiler.  gcc 2.95.2 or later should work.
-TARGET_CC := $(TARGET_CC_PREFIX)gcc
+TARGET_CC := $(TARGET_CC_PREFIX)gcc -m32
 
 # Host C compiler.  This is used to compile programs to execute on
 # the host platform, not the target (x86) platform.  On x86/ELF
@@ -139,7 +139,7 @@ TARGET_CC := $(TARGET_CC_PREFIX)gcc
 HOST_CC := gcc
 
 # Target linker.  GNU ld is probably to only one that will work.
-TARGET_LD := $(TARGET_CC_PREFIX)ld
+TARGET_LD := $(TARGET_CC_PREFIX)ld -m elf_i386
 
 # Target archiver
 TARGET_AR := $(TARGET_CC_PREFIX)ar
@@ -182,7 +182,7 @@ GENERRS := $(PERL) $(PROJECT_ROOT)/scripts/generrs
 
 # Flags used for all C source files
 GENERAL_OPTS := -O -Wall $(EXTRA_C_OPTS)
-CC_GENERAL_OPTS := $(GENERAL_OPTS) -Werror 
+CC_GENERAL_OPTS := $(GENERAL_OPTS) -fno-stack-protector
 
 # Flags used for kernel C source files
 CC_KERNEL_OPTS := -g -DGEEKOS -I$(PROJECT_ROOT)/include
