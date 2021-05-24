@@ -29,7 +29,6 @@
 #include <geekos/paging.h>
 #include <geekos/gosfs.h>
 
-
 /*
  * Define this for a self-contained boot floppy
  * with a PFAT filesystem.  (Target "fd_aug.img" in
@@ -38,16 +37,14 @@
 /*#define FD_BOOT*/
 
 #ifdef FD_BOOT
-#  define ROOT_DEVICE "fd0"
-#  define ROOT_PREFIX "a"
+#define ROOT_DEVICE "fd0"
+#define ROOT_PREFIX "a"
 #else
-#  define ROOT_DEVICE "ide0"
-#  define ROOT_PREFIX "c"
+#define ROOT_DEVICE "ide0"
+#define ROOT_PREFIX "c"
 #endif
 
 #define INIT_PROGRAM "/" ROOT_PREFIX "/shell.exe"
-
-
 
 static void Mount_Root_Filesystem(void);
 static void Spawn_Init_Process(void);
@@ -57,7 +54,7 @@ static void Spawn_Init_Process(void);
  * Initializes kernel subsystems, mounts filesystems,
  * and spawns init process.
  */
-void Main(struct Boot_Info* bootInfo)
+void Main(struct Boot_Info *bootInfo)
 {
     Init_BSS();
     Init_Screen();
@@ -78,12 +75,9 @@ void Main(struct Boot_Info* bootInfo)
 
     Mount_Root_Filesystem();
 
-    Set_Current_Attr(ATTRIB(BLACK, GREEN|BRIGHT));
+    Set_Current_Attr(ATTRIB(BLACK, GREEN | BRIGHT));
     Print("Welcome to GeekOS!\n");
     Set_Current_Attr(ATTRIB(BLACK, GRAY));
-
-
-
 
     Spawn_Init_Process();
 
@@ -91,24 +85,29 @@ void Main(struct Boot_Info* bootInfo)
     Exit(0);
 }
 
-
-
 static void Mount_Root_Filesystem(void)
 {
     if (Mount(ROOT_DEVICE, ROOT_PREFIX, "pfat") != 0)
-	Print("Failed to mount /" ROOT_PREFIX " filesystem\n");
+    // if (Mount("ide1", "/d", "gosfs") != 0)
+        Print("Failed to mount /" ROOT_PREFIX " filesystem\n");
     else
-	Print("Mounted /" ROOT_PREFIX " filesystem!\n");
+        Print("Mounted /" ROOT_PREFIX " filesystem!\n");
 
     Init_Paging();
 }
 
-
-
-
-
-
 static void Spawn_Init_Process(void)
 {
-    TODO("Spawn the init process");
+    // TODO("Spawn the init process");
+    const char *command = "shell.exe";
+    struct Kernel_Thread *pThread;
+    int sh_pid = Spawn(INIT_PROGRAM, command, &pThread);
+    if (sh_pid == 0)
+    {
+        Print("Failed to spawn init process: error code = %d\n", sh_pid);
+    }
+    else
+    {
+        Join(pThread);
+    }
 }

@@ -100,6 +100,5 @@ int Load_User_Program(char *exeFileData, ulong_t exeFileLength,
 bool Copy_From_User(void* destInKernel, ulong_t srcInUser, ulong_t bufSize);
 bool Copy_To_User(ulong_t destInUser, void* srcInKernel, ulong_t bufSize);
 void Switch_To_Address_Space(struct User_Context *userContext);
-
-
+bool Alloc_User_Page(pde_t * pageDir,uint_t startAddress,uint_t sizeInMemory);
 #endif  /* GEEKOS_USER_H */

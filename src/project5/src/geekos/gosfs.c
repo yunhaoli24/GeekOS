@@ -17,6 +17,7 @@
 #include <geekos/synch.h>
 #include <geekos/bufcache.h>
 #include <geekos/gosfs.h>
+#include <geekos/vfs.h>
 
 /* ----------------------------------------------------------------------
  * Private data and functions
@@ -166,11 +167,17 @@ static int GOSFS_Sync(struct Mount_Point *mountPoint)
     &GOSFS_Delete,
 };
 
+/**
+ * 文件系统格式化
+ */
 static int GOSFS_Format(struct Block_Device *blockDev)
 {
     TODO("GeekOS filesystem format operation");
 }
 
+/**
+ * 将磁盘加载到操作系统
+ */
 static int GOSFS_Mount(struct Mount_Point *mountPoint)
 {
     TODO("GeekOS filesystem mount operation");
